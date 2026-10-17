@@ -1,9 +1,22 @@
 import { getCollection } from 'astro:content';
+import commentsBySlug from '../data/comments.json';
 
 // Public read-only mirror of the blog for adam.lol. See /mirror/v1/api/posts.
 // Drafts are never listed and never resolvable by slug.
 
 export const SITE_ORIGIN = 'https://h1k.sh';
+
+// Archived comments from the old blog (hisc.life / dev.helios.ac), keyed by
+// post slug. API-only: the site's own pages don't render them.
+export type MirrorComment = {
+  name: string;
+  comment: string;
+  timestamp: string;
+  replies?: MirrorComment[];
+};
+
+export const getComments = (slug: string): MirrorComment[] =>
+  (commentsBySlug as Record<string, MirrorComment[]>)[slug] ?? [];
 
 export type MirrorPostSummary = {
   slug: string;
@@ -11,6 +24,7 @@ export type MirrorPostSummary = {
   date: string;
   description: string | null;
   url: string;
+  comment_count: number;
 };
 
 export const getPublishedPosts = async () => {
@@ -26,6 +40,7 @@ export const summarize = (e: Awaited<ReturnType<typeof getPublishedPosts>>[numbe
   date: e.data.date.toISOString().replace(/\.\d{3}Z$/, 'Z'),
   description: e.data.description ?? null,
   url: `${SITE_ORIGIN}/blog/${e.id}`,
+  comment_count: getComments(e.id).length,
 });
 
 const sha256 = async (s: string) => {

@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
-import { getPublishedPosts, summarize, jsonOk, jsonError } from '../../../../../lib/mirror';
+import { getPublishedPosts, summarize, getComments, jsonOk, jsonError } from '../../../../../lib/mirror';
 
-// GET /mirror/v1/api/posts/:slug — one post with raw markdown + rendered html.
+// GET /mirror/v1/api/posts/:slug — one post with raw markdown + rendered html
+// and its archived comments.
 // Drafts and unknown slugs both 404 identically.
 export const GET: APIRoute = async ({ request, params }) => {
   try {
@@ -11,6 +12,7 @@ export const GET: APIRoute = async ({ request, params }) => {
       ...summarize(entry),
       markdown: entry.body ?? '',
       html: entry.rendered?.html ?? '',
+      comments: getComments(entry.id),
     });
   } catch (err) {
     console.error('[mirror] post failed', err);
