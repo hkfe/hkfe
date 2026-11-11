@@ -1,6 +1,6 @@
 ---
 title: "a interesting poem for you"
-date: "2025-04-09T00:00:00Z"
+date: "2026-11-11T15:44:00Z"
 ---
 
 this is a poem from my friend [andrey](https://github.com/Shnappy)
