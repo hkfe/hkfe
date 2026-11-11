@@ -54,7 +54,7 @@ const baseHeaders = {
 };
 
 /**
- * 200 JSON with edge caching + ETag; answers 304 to a matching If-None-Match.
+ * 200 JSON, not cached, with ETag; answers 304 to a matching If-None-Match.
  * `etagSource` lets the caller hash only the stable part of the body (e.g. the
  * post list without its `generated` timestamp) so the tag survives across calls.
  */
@@ -63,7 +63,7 @@ export const jsonOk = async (request: Request, body: unknown, etagSource: unknow
   const etag = `"${(await sha256(JSON.stringify(etagSource))).slice(0, 32)}"`;
   const headers = {
     ...baseHeaders,
-    'cache-control': 'public, s-maxage=300, stale-while-revalidate=3600',
+    'cache-control': 'no-store',
     etag,
   };
   const inm = request.headers.get('if-none-match');
